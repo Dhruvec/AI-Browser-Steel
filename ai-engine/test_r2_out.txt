@@ -1,0 +1,9 @@
+﻿OK: 'open pw lecture video'
+    -> https://www.youtube.com/results?search_query=pw+lecture+video
+OK: 'open pw phyics videos'
+    -> https://www.youtube.com/results?search_query=pw+phyics+videos
+OK: 'open pw physics lectures on youtube'
+    -> https://www.youtube.com/results?search_query=pw+physics+lectures
+OK: 'play PW physics lecture video'
+    -> https://www.youtube.com/results?search_query=pw+physics+lecture+video
+LLM: 'open youtube'

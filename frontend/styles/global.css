@@ -1,0 +1,104 @@
+/* GLOBAL RESET */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+
+/* BODY */
+
+body{
+background:#111827;
+color:white;
+overflow:hidden;
+}
+
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+width:6px;
+}
+
+::-webkit-scrollbar-track{
+background:#1f2937;
+}
+
+::-webkit-scrollbar-thumb{
+background:#4b5563;
+border-radius:10px;
+}
+
+
+/* WEBVIEW */
+
+#webview{
+border:none;
+background:white;
+}
+
+
+/* URL INPUT */
+
+#urlInput{
+outline:none;
+border:none;
+}
+
+
+/* AI CHAT AREA */
+
+#chatArea{
+display:flex;
+flex-direction:column;
+gap:6px;
+font-size:14px;
+}
+
+
+/* CHAT MESSAGE */
+
+.chat-message{
+background:#374151;
+padding:6px 10px;
+border-radius:6px;
+}
+
+
+/* SIDEBAR */
+
+#sidebar{
+border-right:1px solid #374151;
+}
+
+
+/* NAVBAR */
+
+#navbar{
+border-bottom:1px solid #374151;
+}
+
+
+/* AI PANEL */
+
+#aiPanel{
+border-left:1px solid #374151;
+}
+
+
+/* BUTTON HOVER */
+
+button:hover{
+opacity:0.85;
+cursor:pointer;
+}
+
+
+/* TRANSITION EFFECT */
+
+button,input{
+transition:all 0.2s ease;
+}

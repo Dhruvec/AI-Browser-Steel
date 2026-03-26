@@ -1,0 +1,16 @@
+{
+  "homepage": "https://www.google.com",
+  "default_search_engine": "https://www.google.com/search?q=",
+  "enable_voice_assistant": true,
+  "enable_ai_assistant": true,
+  "enable_automation": true,
+  "browser_window": {
+    "width": 1400,
+    "height": 900,
+    "fullscreen": false
+  },
+  "security": {
+    "allow_external_navigation": true,
+    "enable_sandbox": true
+  }
+}

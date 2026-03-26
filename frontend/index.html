@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="styles/global.css">
+
+<title>AI Browser</title>
+
+</head>
+
+<body class="bg-gray-900 text-white h-screen flex flex-col">
+
+<!-- TAB BAR -->
+<div id="tabBar" class="flex items-end bg-gray-900 pt-2 px-2 overflow-x-auto border-b border-gray-800 select-none custom-scrollbar"></div>
+
+<!-- NAVBAR -->
+<div id="navbar"></div>
+
+<!-- MAIN AREA -->
+<div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar"></div>
+
+    <!-- BROWSER VIEW -->
+    <div class="flex-1 relative" id="webviewContainer">
+        <!-- Webviews dynamically injected here -->
+    </div>
+
+    <!-- AI PANEL -->
+    <div id="aiPanel"></div>
+
+</div>
+
+<script src="components/navbar.js"></script>
+<script src="components/sidebar.js"></script>
+<script src="components/aiPanel.js"></script>
+
+<script src="scripts/tabs.js"></script>
+<script src="scripts/browser.js"></script>
+<script src="scripts/aiCommand.js"></script>
+<script src="scripts/voice.js"></script>
+
+<style>
+.custom-scrollbar::-webkit-scrollbar { height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+</style>
+</body>
+</html>

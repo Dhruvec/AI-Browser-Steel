@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            margin: 0; 
+            background-color: #020617;
+            background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3000&auto=format&fit=crop');
+            background-size: 130% 130%;
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            position: relative;
+            animation: slowPan 120s ease-in-out infinite alternate;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(15,23,42,0.4) 0%, rgba(2,6,23,0.9) 100%);
+            z-index: 0;
+        }
+        .hero-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            z-index: 10;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .steel-text {
+            font-size: 9rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 50%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.15em;
+            filter: drop-shadow(0 15px 35px rgba(0,0,0,0.8));
+            animation: float 6s ease-in-out infinite;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        #sphere-container {
+            width: 250px;
+            height: 250px;
+            position: relative;
+            animation: floatReverse 7s ease-in-out infinite;
+        }
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            animation: fadeIn 3s ease-in 1s both;
+            margin-bottom: 3rem;
+            z-index: 10;
+            position: relative;
+        }
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 3s ease-in 1.5s both;
+            position: relative;
+            z-index: 10;
+        }
+        .search-input {
+            width: 100%;
+            padding: 1rem 4.5rem 1rem 2rem;
+            font-size: 1.1rem;
+            color: #f8fafc;
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            outline: none;
+        }
+        .search-input:focus {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(148, 163, 184, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        .mic-icon {
+            position: absolute;
+            right: 3.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 50%;
+        }
+        .mic-icon:hover {
+            color: #94a3b8;
+            background-color: rgba(148, 163, 184, 0.1);
+        }
+        .recording {
+            color: #ef4444 !important;
+            animation: pulse-red 1.5s infinite alternate;
+        }
+        @keyframes pulse-red {
+            0% { transform: translateY(-50%) scale(1); filter: drop-shadow(0 0 5px rgba(239,68,68,0.4)); }
+            100% { transform: translateY(-50%) scale(1.1); filter: drop-shadow(0 0 15px rgba(239,68,68,0.8)); }
+        }
+        .search-icon {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .search-container:hover .search-icon {
+            color: #94a3b8;
+        }
+        @keyframes slowPan { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+        @keyframes float {
+            0% { transform: translateY(0px); filter: drop-shadow(0 15px 35px rgba(0,0,0,0.8)); }
+            50% { transform: translateY(-15px); filter: drop-shadow(0 25px 45px rgba(0,0,0,0.6)); }
+            100% { transform: translateY(0px); filter: drop-shadow(0 15px 35px rgba(0,0,0,0.8)); }
+        }
+        @keyframes floatReverse {
+            0% { transform: translateY(-10px); }
+            50% { transform: translateY(10px); }
+            100% { transform: translateY(-10px); }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="hero-container">
+        <div class="steel-text">STEEL</div>
+        <div id="sphere-container"></div>
+    </div>
+    
+    <div class="subtitle">Next Gen AI Browser</div>
+    
+    <div class="search-container">
+        <input type="text" id="homeSearch" class="search-input" placeholder="Search the web or enter URL..." onkeydown="if(event.key === 'Enter') handleSearch()" autofocus autocomplete="off">
+        <svg id="micBtn" class="mic-icon h-9 w-9" onclick="toggleVoiceSearch()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        </svg>
+        <svg class="search-icon h-6 w-6" onclick="handleSearch()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+    </div>
+
+    <!-- Sphere Animation Script -->
+    <script>
+        window.addEventListener("load", function() {
+            const container = document.getElementById('sphere-container');
+            const canv = document.createElement('canvas');
+            canv.style.position = "absolute";
+            canv.style.top = "0";
+            canv.style.left = "0";
+            container.appendChild(canv);
+            const ctx = canv.getContext('2d');
+            
+            let maxx, maxy, xc, yc, R, arp = [];
+            const rotSpeed = 0.003;
+            const minDist = 0.1;
+            let ang1 = 0, ang2 = 0;
+            let dRot1, dRot2;
+            
+            function hslString(h, s = 100, l = 50) { return "hsl(" + h + "," + s + "%," + l + "%)"; }
+            function alea(mini, maxi) { return typeof maxi === 'undefined' ? mini * Math.random() : mini + Math.random() * (maxi - mini); }
+            
+            function Noise1DOneShot(period, min, max) {
+                let currx = Math.random();
+                let y0 = min + (max - min) * Math.random();
+                let y1 = min + (max - min) * Math.random();
+                let dx = 1 / period;
+                return function() {
+                    currx += dx;
+                    if (currx > 1) { currx -= 1; y0 = y1; y1 = min + (max - min) * Math.random(); }
+                    let z = (3 - 2 * currx) * currx * currx;
+                    return z * y1 + (1 - z) * y0;
+                }
+            }
+            
+            function Pos(R) {
+                this.lat = Math.asin(alea(-1, 1));
+                this.long = alea(Math.PI * 2);
+                this.x = R * Math.cos(this.long) * Math.cos(this.lat);
+                this.y = R * Math.sin(this.lat);
+                this.z = R * Math.sin(this.long) * Math.cos(this.lat);
+                // "Dark Blue Theme" (hue 210 to 240)
+                this.color = hslString(alea(210, 240), alea(70, 100), alea(40, 70));
+            }
+            Pos.prototype.distance = function(otherPos) {
+                return Math.hypot(this.x - otherPos.x, this.y - otherPos.y, this.z - otherPos.z);
+            };
+
+            function startOver() {
+                maxx = container.clientWidth;
+                maxy = container.clientHeight;
+                canv.width = maxx;
+                canv.height = maxy;
+                xc = maxx / 2;
+                yc = maxy / 2;
+                R = 0.9 * Math.min(xc, yc);
+                arp = [];
+                for (let i = 0; i < 150; i++) {
+                    let p;
+                    for (let ktry = 100; ktry > 0; --ktry) {
+                        p = new Pos(R);
+                        let k1;
+                        for (k1 = arp.length - 1; k1 >= 0; --k1) {
+                            if (p.distance(arp[k1]) < R * minDist) break;
+                        }
+                        if (k1 < 0) break;
+                    }
+                    arp.push(p);
+                }
+            }
+
+            let animState = 0;
+            function animate() {
+                window.requestAnimationFrame(animate);
+                if (animState === 0) { startOver(); animState++; }
+                
+                ang1 += dRot1(); ang2 += dRot2();
+                
+                let m00 = Math.cos(ang2), m01 = Math.sin(ang2) * Math.sin(ang1), m02 = Math.sin(ang2) * Math.cos(ang1);
+                let m11 = Math.cos(ang1), m12 = -Math.sin(ang1);
+                
+                ctx.clearRect(0, 0, maxx, maxy);
+                
+                arp.forEach(point => {
+                    let rx = xc + m00 * point.x + m01 * point.y + m02 * point.z;
+                    let ry = yc +                 m11 * point.y + m12 * point.z;
+                    // Perspectived scaling
+                    let perspective = (point.z + R) / (2 * R);
+                    let radius = 0.5 + perspective * 3;
+                    
+                    ctx.fillStyle = point.color;
+                    ctx.beginPath();
+                    ctx.arc(rx, ry, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            dRot1 = Noise1DOneShot(500, -rotSpeed, rotSpeed);
+            dRot2 = Noise1DOneShot(500, -rotSpeed, rotSpeed);
+            window.requestAnimationFrame(animate);
+        });
+    </script>
+
+    <!-- Search and Voice Script -->
+    <script>
+        function handleSearch() {
+            let url = document.getElementById("homeSearch").value.trim();
+            if (!url) return;
+            
+            if(!url.startsWith("http") && !url.startsWith("file://")){
+                if(url.includes(" ")){
+                    url = "https://www.google.com/search?q=" + encodeURIComponent(url);
+                } else if(!url.includes(".") && !url.startsWith("localhost")){
+                    url = "https://" + url + ".com";
+                } else {
+                    url = "https://" + url;
+                }
+            }
+            window.location.href = url;
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        async function toggleVoiceSearch() {
+            const micBtn = document.getElementById('micBtn');
+            const searchInput = document.getElementById('homeSearch');
+            
+            if (isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                micBtn.classList.remove('recording');
+                searchInput.placeholder = "Processing voice...";
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = async function() {
+                        const base64data = reader.result.split(',')[1];
+                        try {
+                            const response = await fetch("http://127.0.0.1:8000/transcribe", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ base64_audio: base64data })
+                            });
+                            const data = await response.json();
+                            if (data.text) {
+                                searchInput.value = data.text;
+                                handleSearch();
+                            } else {
+                                searchInput.placeholder = "Could not transcribe audio.";
+                            }
+                        } catch(e) {
+                            searchInput.placeholder = "Error connecting to AI Server.";
+                        }
+                    }
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                micBtn.classList.add('recording');
+                searchInput.value = "";
+                searchInput.placeholder = "Listening... Click mic again to stop.";
+
+            } catch(err) {
+                searchInput.placeholder = "Microphone access denied.";
+            }
+        }
+    </script>
+</body>
+</html>

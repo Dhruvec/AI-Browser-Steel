@@ -1,0 +1,12 @@
+﻿INPUT: 'open pw lecture video'
+  -> No regex match, falls through to LLM
+INPUT: 'open pw physics lectures on youtube'
+  -> REGEX MATCH -> https://www.youtube.com/results?search_query=pw+physics+lectures
+INPUT: 'play PW physics lecture video on youtube'
+  -> REGEX MATCH -> https://www.youtube.com/results?search_query=pw+physics+lecture+video
+INPUT: 'open pw phyics videos'
+  -> No regex match, falls through to LLM
+INPUT: 'open youtube'
+  -> No regex match, falls through to LLM
+INPUT: 'search for black holes'
+  -> No regex match, falls through to LLM

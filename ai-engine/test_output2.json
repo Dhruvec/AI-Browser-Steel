@@ -1,0 +1,12 @@
+{
+  "test1": {
+    "type": "browser",
+    "task": "open",
+    "site": "https://www.youtube.com/results?search_query=PW+physics+videos"
+  },
+  "test2": {
+    "type": "browser",
+    "task": "open",
+    "site": "https://www.youtube.com/results?search_query=PW+physics+lecture"
+  }
+}

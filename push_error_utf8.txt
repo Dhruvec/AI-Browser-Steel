@@ -1,0 +1,40 @@
+﻿git : remote: error: Trace: a
+fed081fed90cf9dd756d7e84c98a8
+18dd46c0e240f475f6f9bcdd5a640
+35497        
+At line:1 char:1
++ git push origin main -f 
+2>&1 | Out-File -FilePath 
+push_error_utf8.txt ...
++ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (remote:  
+   error: ...4035497         
+   :String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+remote: error: See 
+https://gh.io/lfs for more 
+information.        
+remote: error: File node_modu
+les/electron/dist/electron.ex
+e is 168.84 MB; this exceeds 
+GitHub's file size limit of 
+100.00 MB        
+remote: error: GH001: Large 
+files detected. You may want 
+to try Git Large File 
+Storage - 
+https://git-lfs.github.com.  
+      
+To https://github.com/Dhruvec
+/AI-Browser-Steel.git
+ ! [remote rejected] main -> 
+main (pre-receive hook 
+declined)
+error: failed to push some 
+refs to 'https://github.com/D
+hruvec/AI-Browser-Steel.git'
