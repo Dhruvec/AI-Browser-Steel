@@ -3,40 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <style>
         body { 
             margin: 0; 
             background-color: #020617;
             background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3000&auto=format&fit=crop');
-            background-size: 130% 130%;
-            overflow: hidden; 
+            background-size: cover;
+            background-attachment: fixed;
+            overflow-x: hidden; 
             display: flex; 
             flex-direction: column;
             align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
+            min-height: 200vh; /* Increased height to demonstrate smooth scroll */
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             position: relative;
-            animation: slowPan 120s ease-in-out infinite alternate;
         }
+        
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100%;
+            z-index: 10;
+        }
+
         body::before {
             content: '';
             position: absolute;
             inset: 0;
             background: radial-gradient(circle at center, rgba(15,23,42,0.4) 0%, rgba(2,6,23,0.9) 100%);
             z-index: 0;
+            pointer-events: none;
         }
+
         .hero-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1.5rem;
+            gap: 2rem;
             z-index: 10;
             position: relative;
             margin-bottom: 1rem;
+            cursor: default;
         }
+
         .steel-text {
-            font-size: 9rem;
+            font-size: clamp(4rem, 15vw, 9.5rem);
             font-weight: 900;
             background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 50%, #475569 100%);
             -webkit-background-clip: text;
@@ -44,123 +60,260 @@
             background-clip: text;
             letter-spacing: 0.15em;
             filter: drop-shadow(0 15px 35px rgba(0,0,0,0.8));
-            animation: float 6s ease-in-out infinite;
             text-transform: uppercase;
             margin: 0;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
+
+        .hero-container:hover .steel-text {
+            transform: scale(1.02) tracking-wider;
+        }
+
         #sphere-container {
-            width: 250px;
-            height: 250px;
+            width: 300px;
+            height: 300px;
             position: relative;
-            animation: floatReverse 7s ease-in-out infinite;
         }
+
         .subtitle {
             color: #64748b;
             font-size: 1.2rem;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.3em;
             text-transform: uppercase;
-            animation: fadeIn 3s ease-in 1s both;
-            margin-bottom: 3rem;
+            margin-bottom: 3.5rem;
             z-index: 10;
             position: relative;
+            font-weight: 300;
         }
+
         .search-container {
-            width: 100%;
-            max-width: 600px;
-            animation: fadeIn 3s ease-in 1.5s both;
+            width: 90%;
+            max-width: 650px;
             position: relative;
             z-index: 10;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
+        .search-container:focus-within {
+            transform: scale(1.05);
+        }
+
         .search-input {
             width: 100%;
-            padding: 1rem 4.5rem 1rem 2rem;
-            font-size: 1.1rem;
+            padding: 1.2rem 5rem 1.2rem 2.5rem;
+            font-size: 1.2rem;
             color: #f8fafc;
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 100px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
             outline: none;
         }
+
         .search-input:focus {
-            background: rgba(30, 41, 59, 0.6);
-            border-color: rgba(148, 163, 184, 0.5);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-            transform: translateY(-2px);
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 15px 50px rgba(59, 130, 246, 0.2);
         }
-        .mic-icon {
+
+        .mic-icon, .search-icon {
             position: absolute;
-            right: 3.5rem;
             top: 50%;
             transform: translateY(-50%);
             color: #64748b;
             cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 5px;
-            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 11;
         }
-        .mic-icon:hover {
-            color: #94a3b8;
-            background-color: rgba(148, 163, 184, 0.1);
+
+        .mic-icon { right: 4.5rem; }
+        .search-icon { right: 1.8rem; }
+
+        .mic-icon:hover, .search-icon:hover {
+            color: rgba(59, 130, 246, 0.8);
+            transform: translateY(-50%) scale(1.1);
         }
+
         .recording {
             color: #ef4444 !important;
             animation: pulse-red 1.5s infinite alternate;
         }
+
         @keyframes pulse-red {
             0% { transform: translateY(-50%) scale(1); filter: drop-shadow(0 0 5px rgba(239,68,68,0.4)); }
-            100% { transform: translateY(-50%) scale(1.1); filter: drop-shadow(0 0 15px rgba(239,68,68,0.8)); }
+            100% { transform: translateY(-50%) scale(1.2); filter: drop-shadow(0 0 20px rgba(239,68,68,0.8)); }
         }
-        .search-icon {
+
+        .scroll-indicator {
             position: absolute;
-            right: 1.2rem;
-            top: 50%;
-            transform: translateY(-50%);
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
             color: #64748b;
-            cursor: pointer;
-            transition: color 0.3s ease;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.6;
+            animation: bounce 2s infinite;
         }
-        .search-container:hover .search-icon {
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
+            40% {transform: translateX(-50%) translateY(-10px);}
+            60% {transform: translateX(-50%) translateY(-5px);}
+        }
+
+        .features-section {
+            padding: 100px 20px;
+            width: 100%;
+            max-width: 1200px;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(30, 41, 59, 0.5);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #f8fafc;
+        }
+
+        .feature-desc {
             color: #94a3b8;
+            line-height: 1.6;
         }
-        @keyframes slowPan { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
-        @keyframes float {
-            0% { transform: translateY(0px); filter: drop-shadow(0 15px 35px rgba(0,0,0,0.8)); }
-            50% { transform: translateY(-15px); filter: drop-shadow(0 25px 45px rgba(0,0,0,0.6)); }
-            100% { transform: translateY(0px); filter: drop-shadow(0 15px 35px rgba(0,0,0,0.8)); }
-        }
-        @keyframes floatReverse {
-            0% { transform: translateY(-10px); }
-            50% { transform: translateY(10px); }
-            100% { transform: translateY(-10px); }
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="hero-container">
-        <div class="steel-text">STEEL</div>
-        <div id="sphere-container"></div>
+    <div class="content-wrapper">
+        <div class="hero-container">
+            <div class="steel-text">STEEL</div>
+            <div id="sphere-container"></div>
+        </div>
+        
+        <div class="subtitle">Next Gen AI Browser</div>
+        
+        <div class="search-container">
+            <input type="text" id="homeSearch" class="search-input" placeholder="Search the web or enter URL..." onkeydown="if(event.key === 'Enter') handleSearch()" autofocus autocomplete="off">
+            <svg id="micBtn" class="mic-icon h-8 w-8" onclick="toggleVoiceSearch()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+            <svg class="search-icon h-6 w-6" onclick="handleSearch()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>EXPLORE STEEL</span>
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </div>
     </div>
-    
-    <div class="subtitle">Next Gen AI Browser</div>
-    
-    <div class="search-container">
-        <input type="text" id="homeSearch" class="search-input" placeholder="Search the web or enter URL..." onkeydown="if(event.key === 'Enter') handleSearch()" autofocus autocomplete="off">
-        <svg id="micBtn" class="mic-icon h-9 w-9" onclick="toggleVoiceSearch()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-        </svg>
-        <svg class="search-icon h-6 w-6" onclick="handleSearch()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+
+    <div class="features-section">
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3 class="feature-title">Lightning Fast</h3>
+            <p class="feature-desc">Experience the web with zero latency. Optimized engine for superior performance.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3 class="feature-title">AI Powered</h3>
+            <p class="feature-desc">Integrated Groq AI for instant summaries, translations, and browsing assistance.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <h3 class="feature-title">Privacy First</h3>
+            <p class="feature-desc">Built-in trackers and ad blockers. Your data stays on your machine.</p>
+        </div>
     </div>
 
     <!-- Sphere Animation Script -->
     <script>
         window.addEventListener("load", function() {
+            // Initialize Lenis
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+                infinite: false,
+            });
+
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
+            // GSAP Animations
+            gsap.from(".steel-text", {
+                duration: 1.5,
+                y: 50,
+                opacity: 0,
+                ease: "power4.out"
+            });
+            
+            gsap.from(".subtitle", {
+                duration: 1.5,
+                opacity: 0,
+                delay: 0.5,
+                ease: "power3.out"
+            });
+
+            gsap.from(".search-container", {
+                duration: 1.2,
+                y: 30,
+                opacity: 0,
+                delay: 0.8,
+                ease: "back.out(1.7)"
+            });
+
+            gsap.from(".feature-card", {
+                scrollTrigger: ".features-section",
+                duration: 1,
+                y: 50,
+                opacity: 0,
+                stagger: 0.2,
+                ease: "power3.out",
+                delay: 0.5
+            });
+
             const container = document.getElementById('sphere-container');
             const canv = document.createElement('canvas');
             canv.style.position = "absolute";
@@ -170,11 +323,20 @@
             const ctx = canv.getContext('2d');
             
             let maxx, maxy, xc, yc, R, arp = [];
-            const rotSpeed = 0.003;
+            const rotSpeed = 0.001; // Slower default rotation
             const minDist = 0.1;
             let ang1 = 0, ang2 = 0;
             let dRot1, dRot2;
             
+            // Mouse Interaction for Sphere
+            let mouseX = 0, mouseY = 0;
+            let targetX = 0, targetY = 0;
+            
+            window.addEventListener('mousemove', (e) => {
+                targetX = (e.clientX - window.innerWidth / 2) * 0.00005; // Reduced sensitivity
+                targetY = (e.clientY - window.innerHeight / 2) * 0.00005; // Reduced sensitivity
+            });
+
             function hslString(h, s = 100, l = 50) { return "hsl(" + h + "," + s + "%," + l + "%)"; }
             function alea(mini, maxi) { return typeof maxi === 'undefined' ? mini * Math.random() : mini + Math.random() * (maxi - mini); }
             
@@ -197,8 +359,7 @@
                 this.x = R * Math.cos(this.long) * Math.cos(this.lat);
                 this.y = R * Math.sin(this.lat);
                 this.z = R * Math.sin(this.long) * Math.cos(this.lat);
-                // "Dark Blue Theme" (hue 210 to 240)
-                this.color = hslString(alea(210, 240), alea(70, 100), alea(40, 70));
+                this.color = hslString(alea(200, 220), alea(70, 90), alea(50, 80));
             }
             Pos.prototype.distance = function(otherPos) {
                 return Math.hypot(this.x - otherPos.x, this.y - otherPos.y, this.z - otherPos.z);
@@ -213,7 +374,7 @@
                 yc = maxy / 2;
                 R = 0.9 * Math.min(xc, yc);
                 arp = [];
-                for (let i = 0; i < 150; i++) {
+                for (let i = 0; i < 200; i++) {
                     let p;
                     for (let ktry = 100; ktry > 0; --ktry) {
                         p = new Pos(R);
@@ -232,29 +393,38 @@
                 window.requestAnimationFrame(animate);
                 if (animState === 0) { startOver(); animState++; }
                 
-                ang1 += dRot1(); ang2 += dRot2();
+                // Interpolate mouse rotation
+                mouseX += (targetX - mouseX) * 0.05;
+                mouseY += (targetY - mouseY) * 0.05;
+                
+                ang1 += dRot1() + mouseY; 
+                ang2 += dRot2() + mouseX;
                 
                 let m00 = Math.cos(ang2), m01 = Math.sin(ang2) * Math.sin(ang1), m02 = Math.sin(ang2) * Math.cos(ang1);
                 let m11 = Math.cos(ang1), m12 = -Math.sin(ang1);
                 
                 ctx.clearRect(0, 0, maxx, maxy);
                 
-                arp.forEach(point => {
+                // Draw connections
+                ctx.strokeStyle = "rgba(59, 130, 246, 0.1)";
+                ctx.lineWidth = 0.5;
+                
+                arp.forEach((point, i) => {
                     let rx = xc + m00 * point.x + m01 * point.y + m02 * point.z;
                     let ry = yc +                 m11 * point.y + m12 * point.z;
-                    // Perspectived scaling
                     let perspective = (point.z + R) / (2 * R);
-                    let radius = 0.5 + perspective * 3;
+                    let radius = 1 + perspective * 3;
                     
                     ctx.fillStyle = point.color;
+                    ctx.globalAlpha = 0.4 + perspective * 0.6;
                     ctx.beginPath();
                     ctx.arc(rx, ry, radius, 0, Math.PI * 2);
                     ctx.fill();
                 });
             }
 
-            dRot1 = Noise1DOneShot(500, -rotSpeed, rotSpeed);
-            dRot2 = Noise1DOneShot(500, -rotSpeed, rotSpeed);
+            dRot1 = Noise1DOneShot(1200, -rotSpeed, rotSpeed);
+            dRot2 = Noise1DOneShot(1200, -rotSpeed, rotSpeed);
             window.requestAnimationFrame(animate);
         });
     </script>
@@ -338,5 +508,7 @@
             }
         }
     </script>
+</body>
+</html>
 </body>
 </html>

@@ -51,8 +51,10 @@ async function startVoice() {
 
         mediaRecorder.start();
         isRecording = true;
-        if(btn) btn.classList.remove("bg-blue-600");
-        if(btn) btn.classList.add("bg-red-600", "animate-pulse");
+        if(btn) {
+            btn.classList.remove("text-text-secondary");
+            btn.classList.add("text-red-500", "animate-pulse");
+        }
         if(typeof addChat === "function") addChat("AI", "🎤 Listening... Click mic again to stop.");
 
     } catch(err) {

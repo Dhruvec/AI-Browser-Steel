@@ -34,12 +34,12 @@ function createNewTab(url) {
     // 2. Create Tab UI
     const tabEl = document.createElement("div");
     tabEl.id = tabId;
-    tabEl.className = "group flex items-center px-4 py-2 mt-1 mr-1 text-sm rounded-t-lg cursor-pointer transition-colors max-w-[200px] min-w-[120px]";
+    tabEl.className = "group flex items-center px-4 py-2 mt-1 mr-0.5 text-xs rounded-t-xl cursor-pointer transition-all max-w-[200px] min-w-[140px] border-x border-t border-transparent select-none";
     tabEl.onclick = () => switchTab(tabId);
     
     tabEl.innerHTML = `
-        <span class="truncate flex-1 font-medium mr-2" id="${tabId}_title">New Tab</span>
-        <div class="w-5 h-5 flex items-center justify-center rounded-full text-transparent group-hover:text-gray-400 hover:!text-white hover:!bg-red-500 transition-all font-bold" onclick="closeTab(event, '${tabId}')">×</div>
+        <span class="truncate flex-1 font-medium mr-2 text-text-secondary group-hover:text-text-primary transition-colors" id="${tabId}_title">New Tab</span>
+        <div class="w-5 h-5 flex items-center justify-center rounded-lg text-transparent group-hover:text-text-secondary hover:!text-white hover:!bg-red-500/80 transition-all text-base" onclick="closeTab(event, '${tabId}')">×</div>
     `;
     
     const tabBar = document.getElementById("tabBar");
@@ -66,13 +66,16 @@ function switchTab(tabId) {
         if (wv) wv.classList.add("hidden");
         
         const tabEl = document.getElementById(id);
+        const titleEl = document.getElementById(id + "_title");
         if (tabEl) {
             if (id === tabId) {
-                tabEl.classList.remove("bg-gray-800", "text-gray-400");
-                tabEl.classList.add("bg-gray-700", "text-white");
+                tabEl.classList.remove("bg-transparent", "border-transparent");
+                tabEl.classList.add("bg-secondary", "border-border");
+                if (titleEl) titleEl.classList.replace("text-text-secondary", "text-text-primary");
             } else {
-                tabEl.classList.add("bg-gray-800", "text-gray-400");
-                tabEl.classList.remove("bg-gray-700", "text-white");
+                tabEl.classList.add("bg-transparent", "border-transparent");
+                tabEl.classList.remove("bg-secondary", "border-border");
+                if (titleEl) titleEl.classList.replace("text-text-primary", "text-text-secondary");
             }
         }
     });

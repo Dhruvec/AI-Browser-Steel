@@ -15,8 +15,7 @@ function createWindow(){
 
     win.loadFile(path.join(__dirname,"../frontend/index.html"));
 
-    // IMPORTANT
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     return win;
 }

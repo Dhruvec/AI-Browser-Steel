@@ -12,7 +12,7 @@ from agents.booking.bus_agent import BusBookingAgent
 from agents.booking.train_agent import TrainBookingAgent
 from agents.booking.flight_agent import FlightBookingAgent
 
-# Active booking sessions per user
+
 _sessions = {}
 
 def get_session(session_id="default"):
@@ -57,7 +57,7 @@ def continue_booking(user_response, session_id="default"):
     result = agent.next_step(session["step"], {"response": user_response})
     next_step = result.get("next_step", session["step"])
     
-    # Clear session if this is the final step
+  
     if result.get("status") == "complete" or next_step == "complete":
         clear_session(session_id)
     else:
