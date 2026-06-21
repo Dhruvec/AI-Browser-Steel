@@ -9,7 +9,7 @@ async function sendAICommand() {
     addChat("You", text);
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/command", {
+        const response = await fetch(`${getSteelApiBase()}/command`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: text, session_id: AI_SESSION_ID })

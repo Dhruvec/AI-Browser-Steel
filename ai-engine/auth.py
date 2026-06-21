@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 import hashlib
 import hmac
+import os
 import re
 import secrets
 import sqlite3
@@ -12,7 +13,7 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
-DB_PATH = Path(__file__).resolve().parent.parent / "users.db"
+DB_PATH = Path(os.getenv("STEEL_DB_PATH", "/tmp/users.db" if os.getenv("VERCEL") else Path(__file__).resolve().parent.parent / "users.db"))
 SESSION_DAYS = 30
 USERNAME_PATTERN = re.compile(r"^[a-zA-Z0-9_]{3,32}$")
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
