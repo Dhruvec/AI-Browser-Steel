@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import base64, os, re
 from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
@@ -13,6 +15,8 @@ import auth
 
 app = FastAPI()
 app.include_router(auth.router)
+
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 NEWS_FALLBACK = [
     {
@@ -250,3 +254,21 @@ def transcribe_audio(command: AudioCommand):
         return {"text": text}
     except Exception as e:
         return {"text": "", "error": str(e)}
+
+
+@app.get("/")
+def serve_frontend_root():
+    return FileResponse(FRONTEND_DIR / "login.html")
+
+
+@app.get("/{asset_path:path}")
+def serve_frontend_asset(asset_path: str):
+    requested_path = (FRONTEND_DIR / asset_path).resolve()
+    frontend_root = FRONTEND_DIR.resolve()
+
+    if frontend_root not in requested_path.parents and requested_path != frontend_root:
+        raise HTTPException(status_code=404, detail="Not Found")
+    if requested_path.is_file():
+        return FileResponse(requested_path)
+
+    raise HTTPException(status_code=404, detail="Not Found")
