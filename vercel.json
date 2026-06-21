@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "public": true,
+  "name": "ai-browser",
+  "builds": [
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ]
+}

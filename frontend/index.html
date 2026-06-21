@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles/global.css">
+    <title>AI Browser</title>
+</head>
+
+<body>
+    <div class="app-shell flex flex-col">
+        <section class="browser-frame flex flex-col flex-1 min-h-0">
+            <div id="tabBar"
+                class="flex items-center gap-1 px-3 pt-2 overflow-x-auto overflow-y-hidden select-none custom-scrollbar whitespace-nowrap">
+            </div>
+
+            <div id="navbar" class="px-3 pt-2"></div>
+
+            <div class="flex flex-1 overflow-hidden min-h-0 p-3 gap-3">
+                <div id="sidebar" class="w-56 shrink-0"></div>
+                <div class="flex-1 relative webview-shell min-h-0" id="webviewContainer">
+                    <!-- Webviews dynamically injected here -->
+                </div>
+                <div id="aiPanel" class="w-72 shrink-0"></div>
+            </div>
+        </section>
+    </div>
+
+    <script src="scripts/auth.js"></script>
+    <script>
+        (async function () {
+            const user = await initAuthGuard();
+            if (!user) return;
+            localStorage.setItem("steelAuthUser", JSON.stringify(user));
+        })();
+    </script>
+
+    <script src="components/navbar.js"></script>
+    <script src="components/sidebar.js"></script>
+    <script src="components/aiPanel.js"></script>
+    <script src="scripts/tabs.js"></script>
+    <script src="scripts/browser.js"></script>
+    <script src="scripts/aiCommand.js"></script>
+    <script src="scripts/voice.js"></script>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(140, 165, 230, 0.45);
+            border-radius: 999px;
+        }
+    </style>
+</body>
+
+</html>

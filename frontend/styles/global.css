@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    color-scheme: dark;
+    --bg-primary: #000000;
+    --bg-secondary: rgba(8, 8, 8, 0.88);
+    --bg-tertiary: rgba(255, 255, 255, 0.045);
+    --text-primary: #f7f7f7;
+    --text-secondary: #9a9a9a;
+    --accent: #ffffff;
+    --accent-strong: #d6d6d6;
+    --border: rgba(255, 255, 255, 0.1);
+    --glass: rgba(10, 10, 10, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.72);
+    --app-shell-padding: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    color: var(--text-primary);
+    overflow: hidden;
+    background: #000000;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+}
+
+.glass-morphism,
+.glass-panel {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-divider {
+    border-color: var(--border) !important;
+}
+
+.app-shell {
+    height: 100vh;
+    padding: var(--app-shell-padding);
+}
+
+.browser-frame {
+    overflow: hidden;
+    border-radius: 24px;
+    background: rgba(0, 0, 0, 0.92);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.webview-shell {
+    border-radius: 20px;
+    overflow: hidden;
+    background: white;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#webview {
+    border: none;
+    background: white;
+    border-radius: 20px;
+}
+
+#urlInput,
+#aiInput {
+    border: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.74);
+    color: var(--text-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#urlInput:focus,
+#aiInput:focus {
+    border-color: rgba(255, 255, 255, 0.42);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.bg-primary,
+.bg-secondary,
+.bg-tertiary {
+    background: transparent !important;
+}
+
+.text-text-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.border-border {
+    border-color: var(--border) !important;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: var(--text-secondary);
+    border-radius: 14px;
+    border: 1px solid transparent;
+}
+
+.nav-btn:hover,
+.quick-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.quick-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    color: var(--text-secondary);
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.quick-icon {
+    width: 24px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+button,
+input,
+.interactive {
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+button:hover,
+.interactive:hover {
+    transform: translateY(-1px);
+}
+
+button:active,
+.interactive:active {
+    transform: translateY(0);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease forwards;
+}
