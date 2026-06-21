@@ -1,0 +1,21 @@
+# Keep Vercel serverless bundles below the 500 MB ephemeral storage limit.
+node_modules
+venv
+.venv
+.git
+.qodo
+logs
+__pycache__
+*.pyc
+users.db
+
+# Desktop-only Electron runtime.
+electron
+package-lock.json
+
+# Local tests and experimental modules not used by api/index.py.
+test
+models
+vision
+automation
+ai-engine/test_*
