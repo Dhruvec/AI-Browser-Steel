@@ -1,6 +1,7 @@
 let tabs = [];
 let activeTabId = null;
 let tabCounter = 0;
+let tabUrls = {};
 
 const IS_ELECTRON_BROWSER = !!(window.process && window.process.versions && window.process.versions.electron)
     || navigator.userAgent.toLowerCase().includes("electron");
@@ -45,8 +46,7 @@ function createNewTab(url, options = {}) {
     const shouldActivate = options.activate !== false;
     const tabId = 'tab_' + Date.now() + '_' + (++tabCounter);
 
-    const wv = createBrowserView(tabId, url);
-    document.getElementById("webviewContainer").appendChild(wv);
+    tabUrls[tabId] = url;
 
     const tabEl = document.createElement("div");
     tabEl.id = tabId;
@@ -67,6 +67,15 @@ function createNewTab(url, options = {}) {
     return tabId;
 }
 
+function ensureBrowserView(tabId) {
+    let view = document.getElementById(tabId + "_wv");
+    if (view) return view;
+
+    view = createBrowserView(tabId, tabUrls[tabId] || HOME_URL);
+    document.getElementById("webviewContainer").appendChild(view);
+    return view;
+}
+
 function getViewURL(view) {
     if (!view) return "";
     if (typeof view.getURL === "function") return view.getURL();
@@ -78,29 +87,28 @@ function updateURLBar(url) {
 }
 
 function switchTab(tabId) {
+    if (activeTabId && activeTabId !== tabId) {
+        const previousWv = document.getElementById(activeTabId + "_wv");
+        if (previousWv) previousWv.classList.add("hidden");
+
+        const previousTab = document.getElementById(activeTabId);
+        if (previousTab) {
+            previousTab.classList.remove("glass-panel", "text-text-primary");
+            previousTab.classList.add("text-text-secondary");
+        }
+    }
+
     activeTabId = tabId;
 
-    tabs.forEach(id => {
-        const wv = document.getElementById(id + "_wv");
-        if (wv) wv.classList.add("hidden");
-
-        const tabEl = document.getElementById(id);
-        if (tabEl) {
-            if (id === tabId) {
-                tabEl.classList.add("glass-panel", "text-text-primary");
-                tabEl.classList.remove("text-text-secondary");
-            } else {
-                tabEl.classList.remove("glass-panel", "text-text-primary");
-                tabEl.classList.add("text-text-secondary");
-            }
-        }
-    });
-
-    const activeWv = getActiveWebview();
-    if (activeWv) {
-        activeWv.classList.remove("hidden");
-        updateURLBar(getViewURL(activeWv));
+    const tabEl = document.getElementById(tabId);
+    if (tabEl) {
+        tabEl.classList.add("glass-panel", "text-text-primary");
+        tabEl.classList.remove("text-text-secondary");
     }
+
+    const activeWv = ensureBrowserView(tabId);
+    activeWv.classList.remove("hidden");
+    updateURLBar(getViewURL(activeWv));
 }
 
 function closeTab(event, tabId) {
@@ -110,6 +118,7 @@ function closeTab(event, tabId) {
     if (wv) wv.remove();
     const tabEl = document.getElementById(tabId);
     if (tabEl) tabEl.remove();
+    delete tabUrls[tabId];
 
     tabs = tabs.filter(id => id !== tabId);
 
