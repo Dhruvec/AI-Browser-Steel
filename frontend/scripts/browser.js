@@ -23,13 +23,33 @@ function getBrowserViewURL(view) {
     return view.src || "";
 }
 
+function isWebFallbackView(view) {
+    return view && view.tagName && view.tagName.toLowerCase() === "iframe";
+}
+
+function shouldNavigateTopLevel(url) {
+    try {
+        const target = new URL(url, window.location.href);
+        const home = new URL(HOME_URL, window.location.href);
+        return target.origin !== home.origin;
+    } catch (e) {
+        return false;
+    }
+}
+
 function openURL(urlParam) {
     let url = urlParam || document.getElementById("urlInput").value;
     const formattedUrl = formatURL(url);
     const wv = getActiveWebview();
     if (wv) {
-        setBrowserViewURL(wv, formattedUrl);
         document.getElementById("urlInput").value = formattedUrl === HOME_URL ? "" : formattedUrl;
+
+        if (isWebFallbackView(wv) && shouldNavigateTopLevel(formattedUrl)) {
+            window.location.href = formattedUrl;
+            return;
+        }
+
+        setBrowserViewURL(wv, formattedUrl);
     }
 }
 
