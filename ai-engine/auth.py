@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
+import base64
 import hashlib
 import hmac
+import json
 import os
 import re
 import secrets
@@ -15,6 +17,8 @@ router = APIRouter()
 
 DB_PATH = Path(os.getenv("STEEL_DB_PATH", "/tmp/users.db" if os.getenv("VERCEL") else Path(__file__).resolve().parent.parent / "users.db"))
 SESSION_DAYS = 30
+TOKEN_VERSION = "v1"
+AUTH_SECRET = os.getenv("STEEL_AUTH_SECRET", "steel-local-dev-secret-change-me")
 USERNAME_PATTERN = re.compile(r"^[a-zA-Z0-9_]{3,32}$")
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -132,6 +136,49 @@ def create_session(conn, user_id: int) -> str:
     return token
 
 
+def _base64url_encode(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
+
+
+def _base64url_decode(value: str) -> bytes:
+    padding = "=" * (-len(value) % 4)
+    return base64.urlsafe_b64decode(value + padding)
+
+
+def create_auth_token(user: dict) -> str:
+    expires_at = int((utcnow() + timedelta(days=SESSION_DAYS)).timestamp())
+    payload = {
+        "id": user["id"],
+        "username": user["username"],
+        "email": user.get("email", ""),
+        "exp": expires_at,
+    }
+    payload_part = _base64url_encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    signature = hmac.new(AUTH_SECRET.encode("utf-8"), payload_part.encode("ascii"), hashlib.sha256).digest()
+    return f"{TOKEN_VERSION}.{payload_part}.{_base64url_encode(signature)}"
+
+
+def verify_auth_token(token: str) -> Optional[dict]:
+    try:
+        version, payload_part, signature_part = token.split(".", 2)
+        if version != TOKEN_VERSION:
+            return None
+        expected_signature = hmac.new(AUTH_SECRET.encode("utf-8"), payload_part.encode("ascii"), hashlib.sha256).digest()
+        provided_signature = _base64url_decode(signature_part)
+        if not hmac.compare_digest(expected_signature, provided_signature):
+            return None
+        payload = json.loads(_base64url_decode(payload_part).decode("utf-8"))
+        if int(payload.get("exp", 0)) <= int(utcnow().timestamp()):
+            return None
+        return {
+            "id": payload["id"],
+            "username": payload["username"],
+            "email": payload.get("email", ""),
+        }
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+
+
 def extract_token(authorization: Optional[str]) -> str:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing authentication token")
@@ -140,6 +187,10 @@ def extract_token(authorization: Optional[str]) -> str:
 
 def get_current_user(authorization: Optional[str]) -> dict:
     token = extract_token(authorization)
+    stateless_user = verify_auth_token(token)
+    if stateless_user:
+        return stateless_user
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -209,7 +260,7 @@ def login(user: UserIn):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT id, password_hash, salt FROM users WHERE username = ? OR email = ?",
+        "SELECT id, username, email, password_hash, salt FROM users WHERE username = ? OR email = ?",
         (identifier, identifier),
     )
     row = cursor.fetchone()
@@ -218,20 +269,17 @@ def login(user: UserIn):
     if not row:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    user_id, password_hash, salt = row
+    user_id, username, email, password_hash, salt = row
     if not verify_password(user.password, password_hash, salt):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    conn = sqlite3.connect(DB_PATH)
-    try:
-        token = create_session(conn, user_id)
-    finally:
-        conn.close()
+    user_data = {"id": user_id, "username": username, "email": email}
+    token = create_auth_token(user_data)
 
     return {
         "message": "Login successful",
         "token": token,
-        "user": {"id": user_id, "username": identifier},
+        "user": user_data,
     }
 
 
