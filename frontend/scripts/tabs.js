@@ -1,28 +1,49 @@
 let tabs = [];
 let activeTabId = null;
 
-// Compute absolute path for home so webview can load a local file reliably
+const IS_ELECTRON_BROWSER = !!(window.process && window.process.versions && window.process.versions.electron)
+    || navigator.userAgent.toLowerCase().includes("electron");
+const BROWSER_VIEW_TAG = IS_ELECTRON_BROWSER ? "webview" : "iframe";
+
+// Compute absolute path for home so embedded views can load it reliably.
 const HOME_URL = window.location.href.replace('index.html', 'home.html').replace(/\?.*$/, '');
+
+function createBrowserView(tabId, url) {
+    const view = document.createElement(BROWSER_VIEW_TAG);
+    view.id = tabId + "_wv";
+    view.className = "w-full h-full bg-white absolute inset-0 hidden border-0";
+    view.src = url;
+
+    if (BROWSER_VIEW_TAG === "webview") {
+        view.addEventListener('did-navigate', (e) => {
+            if (activeTabId === tabId) updateURLBar(e.url);
+        });
+        view.addEventListener('did-navigate-in-page', (e) => {
+            if (activeTabId === tabId) updateURLBar(e.url);
+        });
+        view.addEventListener('page-title-updated', (e) => {
+            updateTabTitle(tabId, e.title);
+        });
+    } else {
+        view.title = "Browser tab";
+        view.addEventListener("load", () => {
+            if (activeTabId === tabId) updateURLBar(view.src);
+            try {
+                updateTabTitle(tabId, view.contentDocument.title);
+            } catch (e) {
+                updateTabTitle(tabId, view.src.includes("home.html") ? "STEEL Home" : "New Tab");
+            }
+        });
+    }
+
+    return view;
+}
 
 function createNewTab(url) {
     url = url || HOME_URL;
     const tabId = 'tab_' + Date.now();
 
-    const wv = document.createElement("webview");
-    wv.id = tabId + "_wv";
-    wv.className = "w-full h-full bg-white absolute inset-0 hidden";
-    wv.src = url;
-
-    wv.addEventListener('did-navigate', (e) => {
-        if (activeTabId === tabId) updateURLBar(e.url);
-    });
-    wv.addEventListener('did-navigate-in-page', (e) => {
-        if (activeTabId === tabId) updateURLBar(e.url);
-    });
-    wv.addEventListener('page-title-updated', (e) => {
-        updateTabTitle(tabId, e.title);
-    });
-
+    const wv = createBrowserView(tabId, url);
     document.getElementById("webviewContainer").appendChild(wv);
 
     const tabEl = document.createElement("div");
@@ -41,6 +62,12 @@ function createNewTab(url) {
 
     tabs.push(tabId);
     switchTab(tabId);
+}
+
+function getViewURL(view) {
+    if (!view) return "";
+    if (typeof view.getURL === "function") return view.getURL();
+    return view.src || "";
 }
 
 function updateURLBar(url) {
@@ -69,9 +96,7 @@ function switchTab(tabId) {
     const activeWv = getActiveWebview();
     if (activeWv) {
         activeWv.classList.remove("hidden");
-        try {
-            updateURLBar(activeWv.getURL());
-        } catch (e) { /* webview might not be ready */ }
+        updateURLBar(getViewURL(activeWv));
     }
 }
 
