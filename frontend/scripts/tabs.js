@@ -67,17 +67,6 @@ function createNewTab(url, options = {}) {
     return tabId;
 }
 
-function createMultipleTabs(count = 30, url = HOME_URL) {
-    const safeCount = Math.max(1, Math.min(Number(count) || 30, 100));
-    let lastTabId = null;
-
-    for (let i = 0; i < safeCount; i++) {
-        lastTabId = createNewTab(url, { activate: false });
-    }
-
-    if (lastTabId) switchTab(lastTabId);
-}
-
 function getViewURL(view) {
     if (!view) return "";
     if (typeof view.getURL === "function") return view.getURL();
@@ -146,10 +135,7 @@ function getActiveWebview() {
 function initTabs() {
     const tabBar = document.getElementById("tabBar");
     tabBar.classList.add("flex", "items-center", "flex-nowrap", "gap-1", "overflow-x-auto", "overflow-y-hidden", "whitespace-nowrap");
-    tabBar.innerHTML = `
-        <button id="newTabBtn" onclick="createNewTab()" class="shrink-0 ml-1 px-3 py-1.5 text-text-secondary hover:text-white hover:bg-white/10 rounded-2xl text-base transition-colors" title="Open new tab">+</button>
-        <button id="bulkTabBtn" onclick="createMultipleTabs(30)" class="shrink-0 px-3 py-1.5 text-text-secondary hover:text-white hover:bg-white/10 rounded-2xl text-xs font-bold transition-colors" title="Open 30 tabs">+30</button>
-    `;
+    tabBar.innerHTML = `<button id="newTabBtn" onclick="createNewTab()" class="shrink-0 ml-1 px-3 py-1.5 text-text-secondary hover:text-white hover:bg-white/10 rounded-2xl text-base transition-colors" title="Open new tab">+</button>`;
     createNewTab();
 }
 
