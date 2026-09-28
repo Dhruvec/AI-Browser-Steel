@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-AI-Powered Browser
+<<<<<<< AI-Powered Browser >>>>>>>
 ==================
 
 Overview
